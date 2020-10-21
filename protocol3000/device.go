@@ -68,3 +68,50 @@ func New(addr string, opts ...Option) *Device {
 
 	return dev
 }
+
+func (d *Device) sendCommand(ctx context.Context, cmd []byte) (string, error) {
+	var str string
+
+	err := d.pool.Do(ctx, func(conn connpool.Conn) error {
+		deadline, ok := ctx.Deadline()
+		if !ok {
+			deadline = time.Now().Add(10 * time.Second)
+		}
+
+		conn.SetDeadline(deadline)
+
+		n, err := conn.Write(cmd)
+		switch {
+		case err != nil:
+			return fmt.Errorf("unable to write command: %w", err)
+		case n != len(cmd):
+			return fmt.Errorf("unable to write command: wrote %v/%v bytes", n, len(cmd))
+		}
+
+		r, err := conn.ReadUntil(asciiLineFeed, deadline)
+		if err != nil {
+			return fmt.Errorf("unable to read response: %w", err)
+		}
+
+		r = bytes.TrimSpace(r)
+		if len(r) == 0 {
+			// read the next line, where the error is
+			r, err = conn.ReadUntil(asciiLineFeed, deadline)
+			if err != nil {
+				return fmt.Errorf("unable to read error: %w", err)
+			}
+
+			r = bytes.TrimSpace(r)
+			// TODO some mapping for the error?
+			return fmt.Errorf("%s", r)
+		}
+
+		str = string(r)
+		return nil
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return str, nil
+}
