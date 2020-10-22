@@ -3,8 +3,11 @@ package protocol3000
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"net"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/byuoitav/connpool"
@@ -101,9 +104,19 @@ func (d *Device) sendCommand(ctx context.Context, cmd []byte) (string, error) {
 				return fmt.Errorf("unable to read error: %w", err)
 			}
 
+			// parse the error
 			r = bytes.TrimSpace(r)
-			// TODO some mapping for the error?
-			return fmt.Errorf("%s", r)
+			resp := string(r)
+			if !strings.HasPrefix(resp, "ERR ") {
+				return errors.New(string(r))
+			}
+
+			code, err := strconv.Atoi(strings.TrimPrefix(resp, "ERR "))
+			if err != nil {
+				return errors.New(string(r))
+			}
+
+			return errors.New(Error(code))
 		}
 
 		str = string(r)
