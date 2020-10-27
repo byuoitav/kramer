@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/byuoitav/connpool"
+	"go.uber.org/zap"
 )
 
 const (
@@ -19,6 +20,7 @@ const (
 
 type Device struct {
 	pool *connpool.Pool
+	Log  *zap.Logger
 }
 
 func New(addr string, opts ...Option) *Device {
@@ -63,6 +65,7 @@ func New(addr string, opts ...Option) *Device {
 				return conn, nil
 			},
 		},
+		Log: options.logger,
 	}
 
 	if options.logger != nil {

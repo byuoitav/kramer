@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func (d *Device) GetAudioVideoInputs(ctx context.Context) (map[string]string, error) {
+func (d *Device) AudioVideoInputs(ctx context.Context) (map[string]string, error) {
 	resp, err := d.sendCommand(ctx, []byte("#VID? *\n"))
 	if err != nil {
 		return nil, err
