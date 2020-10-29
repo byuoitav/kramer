@@ -146,3 +146,12 @@ func parseIPInfo(ip string) (hostname string, network NetworkInfo) {
 
 	return hostname, network
 }
+
+func (v *Via) Healthy(ctx context.Context) error {
+	_, err := v.Volumes(ctx, []string{})
+	if err != nil {
+		return fmt.Errorf("unable to get volume (not healthy): %s", err)
+	}
+
+	return nil
+}

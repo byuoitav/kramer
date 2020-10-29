@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-func (d *Device) Health(ctx context.Context) error {
-	resp, err := d.sendCommand(ctx, []byte("#VID? *\n"))
+func (d *Device) Healthy(ctx context.Context) error {
+	resp, err := d.sendCommand(ctx, []byte("#\n"))
 	if err != nil {
 		return err
 	}
