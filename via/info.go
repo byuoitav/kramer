@@ -52,16 +52,8 @@ type NetworkInfo struct {
 	DNS        []string `json:"dns,omitempty"`
 }
 
-// GetInfo: needed by the DSP drivers implementation.  Will get hardware information
-func (v *Via) Info(ctx context.Context) (interface{}, error) {
-	info, err := v.GetHardwareInfo(ctx)
-	if err != nil {
-		return info, fmt.Errorf("Failed to get hardware information: %s", err)
-	}
-	return info, nil
-}
-
-func (v *Via) GetHardwareInfo(ctx context.Context) (HardwareInfo, error) {
+// Info gets the info for the via
+func (v *Via) Info(ctx context.Context) ({}interface, error) {
 	v.Log.Info("Getting hardware info", zap.String("address", v.Address))
 
 	var toReturn HardwareInfo
