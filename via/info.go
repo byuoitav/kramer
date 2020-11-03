@@ -53,7 +53,7 @@ type NetworkInfo struct {
 }
 
 // Info gets the info for the via
-func (v *Via) Info(ctx context.Context) ({}interface, error) {
+func (v *Via) Info(ctx context.Context) (interface{}, error) {
 	v.Log.Info("Getting hardware info", zap.String("address", v.Address))
 
 	var toReturn HardwareInfo
